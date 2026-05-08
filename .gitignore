@@ -19,7 +19,9 @@ install_manifest.txt
 compile_commands.json
 
 # IDEs
-.vscode/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
@@ -29,6 +31,10 @@ compile_commands.json
 Thumbs.db
 
 # Legacy and environment
-legacy/
 __pycache__/
 *.pyc
+venv/
+.env
+
+# Generated Documentation
+docs/

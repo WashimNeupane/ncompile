@@ -1,0 +1,24 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+    - id: trailing-whitespace
+    - id: end-of-file-fixer
+    - id: check-yaml
+    - id: check-added-large-files
+
+- repo: https://github.com/pre-commit/mirrors-clang-format
+  rev: v16.0.0
+  hooks:
+    - id: clang-format
+      types_or: [c++, c, cuda, proto]
+
+- repo: local
+  hooks:
+    - id: clang-tidy
+      name: clang-tidy
+      entry: clang-tidy
+      language: system
+      types_or: [c++, c]
+      args: ["-p=build", "--quiet"]
+      stages: [manual] # clang-tidy can be slow, so run it manually or on demand

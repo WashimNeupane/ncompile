@@ -5,7 +5,7 @@
 #include "mlir/Tools/mlir-opt/MlirOptMain.h"
 #include "ncompile/Dialect/NCompile/NCompileDialect.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   mlir::DialectRegistry registry;
   mlir::registerAllDialects(registry);
   mlir::registerAllPasses();
