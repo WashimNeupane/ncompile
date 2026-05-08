@@ -11,7 +11,9 @@ target_link_libraries(ncompile-opt PRIVATE
     MLIRIR
     MLIRPass
     MLIRSupport
-    MLIRMlirOptLib
+    MLIROptLib
+    MLIRRegisterAllDialects
+    MLIRRegisterAllPasses
 )
 
 mlir_check_all_link_libraries(ncompile-opt)

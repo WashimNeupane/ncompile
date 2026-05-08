@@ -15,10 +15,10 @@ if(CCACHE_PROGRAM)
 endif()
 
 # Enable clang-tidy if available
-find_program(CLANG_TIDY_PROGRAM clang-tidy)
-if(CLANG_TIDY_PROGRAM)
-  set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_PROGRAM}")
-endif()
+# find_program(CLANG_TIDY_PROGRAM clang-tidy)
+# if(CLANG_TIDY_PROGRAM)
+#   set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_PROGRAM}")
+# endif()
 
 # Doxygen
 find_package(Doxygen)

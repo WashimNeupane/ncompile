@@ -30,12 +30,15 @@ From the `llvm-project` directory:
 ```powershell
 mkdir build
 cd build
-cmake -G Ninja ../llvm `
-  -DLLVM_ENABLE_PROJECTS=mlir `
-  -DLLVM_BUILD_EXAMPLES=ON `
-  -DLLVM_TARGETS_TO_BUILD=Native `
-  -DCMAKE_BUILD_TYPE=Release `
-  -DLLVM_ENABLE_ASSERTIONS=ON
+cmake -G Ninja ../llvm \
+  -DLLVM_ENABLE_PROJECTS=mlir \
+  -DLLVM_BUILD_EXAMPLES=ON \
+  -DLLVM_TARGETS_TO_BUILD=Native \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DLLVM_ENABLE_ASSERTIONS=ON \
+  -DBUILD_SHARED_LIBS=ON \
+  -DLLVM_USE_LINKER=lld
+
 cmake --build .
 ```
 
@@ -52,8 +55,8 @@ Once LLVM/MLIR is built, you can build NCompile:
 2. **Configure with CMake**:
    Provide the path to your LLVM/MLIR build directory:
    ```powershell
-   cmake -G Ninja .. `
-     -DMLIR_DIR=<path_to_llvm_project>/build/lib/cmake/mlir `
+   cmake -G Ninja .. \
+     -DMLIR_DIR=<path_to_llvm_project>/build/lib/cmake/mlir \
      -DLLVM_DIR=<path_to_llvm_project>/build/lib/cmake/llvm
    ```
 
