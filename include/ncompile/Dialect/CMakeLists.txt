@@ -1,1 +1,1 @@
-add_subdirectory(NCompile)
+add_subdirectory(QEC)

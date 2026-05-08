@@ -8,9 +8,9 @@ configure_lit_site_cfg(
   ${CMAKE_CURRENT_SOURCE_DIR}/lit.cfg.py
 )
 
-add_lit_testsuite(check-ncompile "Running the ncompile regression tests"
+add_lit_testsuite(check-qeccc "Running the qeccc regression tests"
   ${CMAKE_CURRENT_BINARY_DIR}
-  DEPENDS ncompile-opt
+  DEPENDS qeccc-opt
 )
 
-set_target_properties(check-ncompile PROPERTIES FOLDER "Tests")
+set_target_properties(check-qeccc PROPERTIES FOLDER "Tests")

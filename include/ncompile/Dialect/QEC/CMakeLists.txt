@@ -1,0 +1,11 @@
+set(LLVM_TARGET_DEFINITIONS QECDialect.td)
+mlir_tablegen(QECDialect.h.inc -gen-dialect-decls -dialect=qec)
+mlir_tablegen(QECDialect.cpp.inc -gen-dialect-defs -dialect=qec)
+mlir_tablegen(QECDialectTypes.h.inc -gen-typedef-decls -dialect=qec)
+mlir_tablegen(QECDialectTypes.cpp.inc -gen-typedef-defs -dialect=qec)
+add_public_tablegen_target(QECDialectIncGen)
+
+set(LLVM_TARGET_DEFINITIONS QECOps.td)
+mlir_tablegen(QECOps.h.inc -gen-op-decls)
+mlir_tablegen(QECOps.cpp.inc -gen-op-defs)
+add_public_tablegen_target(QECOpsIncGen)

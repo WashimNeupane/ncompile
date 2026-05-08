@@ -2,12 +2,12 @@ set(LLVM_LINK_COMPONENTS
     Support
 )
 
-add_mlir_tool(ncompile-opt
-    ncompile-opt.cpp
+add_mlir_tool(qeccc-opt
+    qeccc-opt.cpp
 )
 
-target_link_libraries(ncompile-opt PRIVATE
-    MLIRNCompileDialect
+target_link_libraries(qeccc-opt PRIVATE
+    MLIRQECDialect
     MLIRIR
     MLIRPass
     MLIRSupport
@@ -16,4 +16,4 @@ target_link_libraries(ncompile-opt PRIVATE
     MLIRRegisterAllPasses
 )
 
-mlir_check_all_link_libraries(ncompile-opt)
+mlir_check_all_link_libraries(qeccc-opt)

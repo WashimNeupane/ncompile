@@ -12,6 +12,6 @@ config.test_source_root = os.path.dirname(__file__)
 llvm_config.with_environment('PATH', config.ncompile_obj_root, append_path=True)
 
 tool_dirs = [config.ncompile_obj_root + '/bin']
-tools = ['ncompile-opt']
+tools = ['qeccc-opt']
 
 llvm_config.add_tool_substitutions(tools, tool_dirs)
