@@ -1,3 +1,9 @@
+/**
+ * @file QECOps.td
+ * @brief TableGen definition for QEC Operations.
+ * @ingroup qec_dialect
+ */
+
 #ifndef QEC_OPS_TD
 #define QEC_OPS_TD
 

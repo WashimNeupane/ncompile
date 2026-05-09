@@ -1,3 +1,10 @@
+/**
+ * @file QECDialect.h
+ * @brief Main header for the QEC Dialect.
+ *
+ * @ingroup qec_dialect
+ */
+
 #ifndef QEC_DIALECT_H
 #define QEC_DIALECT_H
 

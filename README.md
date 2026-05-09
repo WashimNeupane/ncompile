@@ -1,86 +1,88 @@
-# NCompile - MLIR Compiler Boilerplate
+# NCompile - QEC Research Compiler
 
-NCompile is a starting point for building custom MLIR-based compilers. It provides a skeleton dialect, an optimizer driver (`ncompile-opt`), and a testing framework.
+**Author:** Washim Neupane (washimneupane@outlook.com)
+
+NCompile is a specialized MLIR-based compiler infrastructure designed for Quantum Error Correction (QEC) research. It acts as a bridge between abstract parity-check specifications and cycle-accurate hardware gate schedules.
+
+## Core Concepts
+
+### The QEC Dialect
+The compiler centers around the `qec` dialect, which provides types and operations specifically for fault-tolerant quantum computing:
+- **Physical Coordinates**: Qubits are tracked via `!qec.qubit<x, y>` types, allowing for geometry-aware optimizations.
+- **High-Level Paulis**: Parity checks are defined using `qec.measure_pauli`, abstracting away the complex CNOT sequences until the scheduling phase.
+- **Hardware Primitives**: Supports lowering to standard gates like `cx`, `reset`, and `measure`.
+
+### Automated Scheduling
+The core research value of NCompile is its automated scheduling pass. It transforms a set of overlapping Pauli measurements into an optimal, non-conflicting gate schedule by:
+1. Building a **Conflict Graph** of shared qubits.
+2. Applying **Graph Coloring** to assign measurements to time slices.
+3. Expanding Paulis into hardware-specific CNOT cascades.
+
+### Testing & Verification
+We use a multi-tier approach to ensure compiler correctness:
+- **Lit Tests**: IR-level regression testing.
+- **Stim Integration**: Direct lowering to `.stim` files for Monte-Carlo simulation of error rates.
+- **Verifiers**: Strict C++ checking of hardware constraint violations.
 
 ## Prerequisites
 
-Before building, ensure you have the following installed:
+- **LLVM/MLIR**: Built with `MLIR_ENABLE_BINDINGS_PYTHON=ON`.
+- **Python 3.10+**
+- **nanobind**: Installed via pip or available in the system.
+- **Ninja & CMake**
 
-- **Python 3.x**
-- **C++ Compiler** (e.g., MSVC on Windows, GCC/Clang on Linux)
-- **CMake** (>= 3.20)
+## Building the Compiler
 
-### Install Build Tools
-You can install the necessary build tools via pip:
-```powershell
-pip install -r requirements.txt
-```
+1. **Setup Environment**:
+   Ensure your `MLIR_DIR` and `LLVM_DIR` point to your LLVM build.
 
-## Setting up LLVM and MLIR
-
-This project requires a build of LLVM and MLIR with development headers.
-
-### 1. Clone LLVM Project
-```powershell
-git clone https://github.com/llvm/llvm-project.git
-```
-
-### 2. Build LLVM/MLIR
-From the `llvm-project` directory:
-```powershell
-mkdir build
-cd build
-cmake -G Ninja ../llvm \
-  -DLLVM_ENABLE_PROJECTS=mlir \
-  -DLLVM_BUILD_EXAMPLES=ON \
-  -DLLVM_TARGETS_TO_BUILD=Native \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DLLVM_ENABLE_ASSERTIONS=ON \
-  -DBUILD_SHARED_LIBS=ON \
-  -DLLVM_USE_LINKER=lld
-
-cmake --build .
-```
-
-## Building NCompile
-
-Once LLVM/MLIR is built, you can build NCompile:
-
-1. **Create a build directory**:
-   ```powershell
-   mkdir build
-   cd build
-   ```
-
-2. **Configure with CMake**:
-   Provide the path to your LLVM/MLIR build directory:
-   ```powershell
+2. **Configure**:
+   ```bash
+   mkdir build && cd build
    cmake -G Ninja .. \
-     -DMLIR_DIR=<path_to_llvm_project>/build/lib/cmake/mlir \
-     -DLLVM_DIR=<path_to_llvm_project>/build/lib/cmake/llvm
+     -DMLIR_DIR=/path/to/llvm-project/build/lib/cmake/mlir \
+     -DLLVM_DIR=/path/to/llvm-project/build/lib/cmake/llvm \
+     -DMLIR_ENABLE_BINDINGS_PYTHON=ON
    ```
 
 3. **Build**:
-   ```powershell
+   ```bash
    ninja
    ```
 
-## Running Tests
+## Python Integration
 
-To run the custom optimizer driver:
-```powershell
-./bin/ncompile-opt ../test/ncompile-opt/dummy.mlir
+To use the QEC Python bindings, add the following to your `PYTHONPATH`:
+```bash
+export PYTHONPATH=$MLIR_PYTHON_PACKAGES:$NCOMPILE_BUILD/python/python_packages
 ```
 
-To run the full test suite:
-```powershell
-ninja check-ncompile
+### Generating Benchmarks
+You can generate the Gross code benchmark IR using the provided tool:
+```bash
+venv/bin/python3 tools/gen_gross_code.py > benchmarks/gross_72_12_6.mlir
+```
+
+## Documentation
+
+API documentation is generated using Doxygen. To build the documentation:
+```bash
+ninja doxygen
+```
+The output will be available in `docs/html/index.html`.
+
+## Testing
+
+Run the QEC-specific test suite:
+```bash
+ninja check-qeccc
 ```
 
 ## Project Structure
 
-- `include/`: Dialect definitions and headers.
-- `lib/`: Dialect implementation.
-- `ncompile-opt/`: Driver tool source.
-- `test/`: Regression tests.
-- `legacy/`: Old project files (ignored by git).
+- `include/ncompile/Dialect/QEC`: C++ Dialect definitions (ODS).
+- `include/ncompile-c/Dialect/QEC`: C-API for Python interoperability.
+- `lib/Dialect/QEC`: Dialect implementation.
+- `python/ncompile/dialects`: Python wrappers and generated ODS.
+- `tools/`: Research scripts and benchmark generators.
+- `test/`: Lit regression tests.

@@ -1,11 +1,22 @@
+"""
+@file gen_gross_code.py
+@brief Benchmark generator for the [[72, 12, 6]] Gross code.
+@author Washim Neupane (washimneupane@outlook.com)
+
+This script uses the ncompile QEC dialect to generate a high-level MLIR
+representation of the Bivariate Bicycle code (Gross code).
+"""
+
 from mlir.ir import *
 from ncompile.dialects import qec
 
 @register_attribute_builder("QEC_CodeType")
 def _qecCodeType(x, context):
+    """Builder for the QEC_CodeType enum attribute."""
     return IntegerAttr.get(IntegerType.get_signless(32, context=context), x)
 
 def gen_gross_code():
+    """Generates the MLIR IR for the Gross code benchmark."""
     ctx = Context()
     qec.register_dialect(ctx)
 

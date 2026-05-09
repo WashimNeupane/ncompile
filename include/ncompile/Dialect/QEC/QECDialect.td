@@ -1,3 +1,9 @@
+/**
+ * @file QECDialect.td
+ * @brief TableGen definition for the QEC Dialect.
+ * @ingroup qec_dialect
+ */
+
 #ifndef QEC_DIALECT_TD
 #define QEC_DIALECT_TD
 
