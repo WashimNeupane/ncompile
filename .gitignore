@@ -19,9 +19,7 @@ install_manifest.txt
 compile_commands.json
 
 # IDEs
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
+.vscode/
 .idea/
 *.swp
 *.swo
