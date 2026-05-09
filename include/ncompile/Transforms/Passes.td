@@ -13,7 +13,8 @@ def QECSchedule : Pass<"qec-schedule", "mlir::ModuleOp"> {
   let dependentDialects = ["mlir::qec::QECDialect"];
   let options = [
     Option<"naive", "naive", "bool", "false", "Assign each op to a unique time slice (serial)">,
-    Option<"useAStar", "use-astar", "bool", "false", "Use congestion-aware A* routing">
+    Option<"useAStar", "use-astar", "bool", "false", "Use congestion-aware A* routing">,
+    Option<"asap", "asap", "bool", "false", "Ignore braiding paths (ASAP physical baseline)">
   ];
 }
 

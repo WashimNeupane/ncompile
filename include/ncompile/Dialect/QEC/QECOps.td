@@ -45,7 +45,8 @@ def MeasureParityOp : QEC_Op<"measure_parity", [MemoryEffects<[MemWrite]>]> {
     let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata,
                          Variadic<QEC_MZMType>:$mzms,
                          OptionalAttr<I32Attr>:$time_slice,
-                         OptionalAttr<ArrayAttr>:$braid_path);
+                         OptionalAttr<ArrayAttr>:$braid_path,
+                         OptionalAttr<F64Attr>:$noise);
     let results = (outs QEC_SyndromeType:$syndrome);
     let assemblyFormat = "$mzms attr-dict `:` functional-type($mzms, results)";
     let hasVerifier = 1;
