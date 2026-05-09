@@ -48,34 +48,55 @@ def gen_tetron_gross_code(L=6):
             # between MZM 0 and 1. Pauli-Z is MZM 0 and 2.
             # (Simplification for the project)
 
-            # X-checks
-            for r in range(L):
-                for c in range(L):
-                    # Logical parity XXXXXX is a joint parity of 12 MZMs (2 per tetron)
-                    targets = []
-                    q_indices = [
-                        (0, (r + 3) % L, c), (0, r, (c + 1) % L), (0, r, (c + 2) % L),
-                        (1, r, (c + 3) % L), (1, (r + 1) % L, c), (1, (r + 2) % L, c)
-                    ]
-                    for layer, qr, qc in q_indices:
-                        targets.append(get_mzm(layer, qr, qc, 0))
-                        targets.append(get_mzm(layer, qr, qc, 1))
+            syndromes = []
+            D = 6
+            for round in range(D):
+                # X-checks
+                for r in range(L):
+                    for c in range(L):
+                        targets = []
+                        q_indices = [
+                            (0, (r + 3) % L, c), (0, r, (c + 1) % L), (0, r, (c + 2) % L),
+                            (1, r, (c + 3) % L), (1, (r + 1) % L, c), (1, (r + 2) % L, c)
+                        ]
+                        for layer, qr, qc in q_indices:
+                            targets.append(get_mzm(layer, qr, qc, 0))
+                            targets.append(get_mzm(layer, qr, qc, 1))
 
-                    qec.measure_parity(syndrome_type, targets)
+                        res = qec.measure_parity(syndrome_type, targets)
+                        syndromes.append(res)
+                        # Detector: compare with previous round
+                        if round > 0:
+                            prev_res = syndromes[(round-1) * (2*L*L) + (r * L + c)]
+                            qec.detector([res, prev_res])
+                        else:
+                            qec.detector([res])
 
-            # Z-checks
-            for r in range(L):
-                for c in range(L):
-                    targets = []
-                    q_indices = [
-                        (0, r, (c + 3) % L), (0, (r + 5) % L, c), (0, (r + 4) % L, c),
-                        (1, (r + 3) % L, c), (1, r, (c + 5) % L), (1, (r + 4) % L, c)
-                    ]
-                    for layer, qr, qc in q_indices:
-                        targets.append(get_mzm(layer, qr, qc, 0))
-                        targets.append(get_mzm(layer, qr, qc, 2))
+                # Z-checks
+                for r in range(L):
+                    for c in range(L):
+                        targets = []
+                        q_indices = [
+                            (0, r, (c + 3) % L), (0, (r + 5) % L, c), (0, (r + 4) % L, c),
+                            (1, (r + 3) % L, c), (1, r, (c + 5) % L), (1, (r + 4) % L, c)
+                        ]
+                        for layer, qr, qc in q_indices:
+                            targets.append(get_mzm(layer, qr, qc, 0))
+                            targets.append(get_mzm(layer, qr, qc, 2))
 
-                    qec.measure_parity(syndrome_type, targets)
+                        res = qec.measure_parity(syndrome_type, targets)
+                        syndromes.append(res)
+                        # Detector: compare with previous round
+                        if round > 0:
+                            prev_res = syndromes[(round-1) * (2*L*L) + (L*L + r * L + c)]
+                            qec.detector([res, prev_res])
+                        else:
+                            qec.detector([res])
+
+            # Logical Observable (Check X on logical qubit 0)
+            obs_targets = [get_mzm(0, 0, 0, 0), get_mzm(0, 0, 0, 1)]
+            obs_res = qec.measure_parity(syndrome_type, obs_targets)
+            qec.logical_observable(syndrome_type, [obs_res])
 
         print(module)
 
