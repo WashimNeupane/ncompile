@@ -72,6 +72,16 @@ def QEC_PatchType : QEC_Type<"Patch", "patch"> {
     let genVerifyDecl = 1;
 }
 
+def QEC_MZMType : QEC_Type<"MZM", "mzm"> {
+    let summary = "Majorana Zero Mode at (x, y)";
+    let parameters = (ins "int64_t":$x, "int64_t":$y);
+    let assemblyFormat = "`<` $x `,` $y `>`";
+}
+
+def QEC_TetronType : QEC_Type<"Tetron", "tetron"> {
+    let summary = "A logical qubit unit composed of 4 MZMs";
+}
+
 //===----------------------------------------------------------------------===//
 // QEC Op definition.
 //===----------------------------------------------------------------------===//
