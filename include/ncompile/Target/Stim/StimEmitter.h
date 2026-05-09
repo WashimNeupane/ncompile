@@ -10,7 +10,8 @@ class ModuleOp;
 namespace qec {
 
 /// Translates the given QEC module to Stim circuit format.
-LogicalResult translateToStim(ModuleOp module, raw_ostream& output);
+LogicalResult translateToStim(ModuleOp module, raw_ostream& output,
+                              double errorRate = 0.0);
 
 } // namespace qec
 } // namespace mlir

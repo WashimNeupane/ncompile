@@ -9,12 +9,16 @@
 
 using namespace mlir;
 
+static llvm::cl::opt<double>
+    errorRate("p", llvm::cl::desc("Physical error rate for Stim noise models"),
+              llvm::cl::init(0.0));
+
 namespace mlir {
 void registerStimTranslation() {
   TranslateFromMLIRRegistration registration(
       "qec-to-stim", "translate from qec to stim",
       [](ModuleOp module, raw_ostream& output) {
-        return qec::translateToStim(module, output);
+        return qec::translateToStim(module, output, errorRate);
       },
       [](DialectRegistry& registry) {
         registry.insert<qec::QECDialect, func::FuncDialect>();
