@@ -3,6 +3,7 @@
 
 include "mlir/IR/OpBase.td"
 include "mlir/IR/AttrTypeBase.td"
+include "mlir/IR/EnumAttr.td"
 
 //===----------------------------------------------------------------------===//
 // QEC Dialect definition.
@@ -20,49 +21,56 @@ def QEC_Dialect : Dialect {
 }
 
 //===----------------------------------------------------------------------===//
+// QEC Attributes and Enums.
+//===----------------------------------------------------------------------===//
+
+def QEC_CodeType : I32EnumAttr<"CodeType", "Supported QEC code types", [
+  I32EnumAttrCase<"Surface", 0>,
+  I32EnumAttrCase<"BivariateBicycle", 1>,
+  I32EnumAttrCase<"Tetron", 2>
+]> {
+  let genSpecializedAttr = 1;
+  let cppNamespace = "::mlir::qec";
+}
+
+//===----------------------------------------------------------------------===//
 // QEC Type definitions.
 //===----------------------------------------------------------------------===//
 
 class QEC_Type<string name, string typeMnemonic, list<Trait> traits = []>
     : TypeDef<QEC_Dialect, name, traits> {
-  let mnemonic = typeMnemonic;
+    let mnemonic = typeMnemonic;
 }
 
 def QEC_QubitType : QEC_Type<"Qubit", "qubit"> {
-  let summary = "A physical qubit in a QEC patch";
+    let summary = "A physical qubit with coordinates";
+    let parameters = (ins "int64_t":$x, "int64_t":$y);
+    let assemblyFormat = "`<` $x `,` $y `>`";
 }
 
 def QEC_SyndromeType : QEC_Type<"Syndrome", "syndrome"> {
-  let summary = "A syndrome measurement result";
+    let summary = "A syndrome measurement result (classical bit)";
 }
 
-// Represents a Pauli string (e.g., "XYZI") as a type
 def QEC_PauliType : QEC_Type<"Pauli", "pauli"> {
-  let summary = "A Pauli string type";
-  let parameters = (ins StringRefParameter<"The Pauli string">:$pauli_string);
-  let assemblyFormat = "`<` $pauli_string `>`";
-  let genVerifyDecl = 1;
+    let summary = "A Pauli string type";
+    let parameters = (ins "StringAttr":$pauliString);
+    let assemblyFormat = "`<` $pauliString `>`";
+    let genVerifyDecl = 1;
 }
 
-// Represents a QEC code configuration (e.g., surface, distance 3)
 def QEC_PatchType : QEC_Type<"Patch", "patch"> {
-  let summary = "A QEC patch configuration type";
-  let parameters = (ins StringRefParameter<"The code type">:$code_type,
-                        AttrOrTypeParameter<"int64_t", "The distance">:$distance);
-  let assemblyFormat = "`<` $code_type `,` $distance `>`";
-  let genVerifyDecl = 1;
+    let summary = "A QEC patch configuration";
+    let parameters = (ins "StringAttr":$codeType, "int64_t":$distance);
+    let assemblyFormat = "`<` $codeType `,` $distance `>`";
+    let genVerifyDecl = 1;
 }
 
 //===----------------------------------------------------------------------===//
-// QEC Op definitions.
+// QEC Op definition.
 //===----------------------------------------------------------------------===//
 
-// Base class for all QEC operations.
-// It automatically appends an optional 'metadata' DictionaryAttr to the arguments.
-// This forces mlir-tblgen to generate the mandatory Properties API boilerplate.
 class QEC_Op<string mnemonic, list<Trait> traits = []> :
-        Op<QEC_Dialect, mnemonic, traits> {
-    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata);
-}
+    Op<QEC_Dialect, mnemonic, traits>;
 
 #endif // QEC_DIALECT_TD

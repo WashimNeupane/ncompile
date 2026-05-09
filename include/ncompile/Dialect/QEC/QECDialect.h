@@ -10,6 +10,8 @@
 
 #include "ncompile/Dialect/QEC/QECDialect.h.inc"
 
+#include "ncompile/Dialect/QEC/QECDialectEnums.h.inc"
+
 #define GET_TYPEDEF_CLASSES
 #include "ncompile/Dialect/QEC/QECDialectTypes.h.inc"
 

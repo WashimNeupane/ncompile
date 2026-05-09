@@ -3,6 +3,8 @@ mlir_tablegen(QECDialect.h.inc -gen-dialect-decls -dialect=qec)
 mlir_tablegen(QECDialect.cpp.inc -gen-dialect-defs -dialect=qec)
 mlir_tablegen(QECDialectTypes.h.inc -gen-typedef-decls -dialect=qec)
 mlir_tablegen(QECDialectTypes.cpp.inc -gen-typedef-defs -dialect=qec)
+mlir_tablegen(QECDialectEnums.h.inc -gen-enum-decls)
+mlir_tablegen(QECDialectEnums.cpp.inc -gen-enum-defs)
 add_public_tablegen_target(QECDialectIncGen)
 
 set(LLVM_TARGET_DEFINITIONS QECOps.td)
