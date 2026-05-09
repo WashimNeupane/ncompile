@@ -8,6 +8,7 @@ add_mlir_tool(qeccc-opt
 
 target_link_libraries(qeccc-opt PRIVATE
     MLIRQECDialect
+    NCompileTransforms
     MLIRIR
     MLIRPass
     MLIRSupport

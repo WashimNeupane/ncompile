@@ -5,9 +5,11 @@
 #include "mlir/Tools/mlir-opt/MlirOptMain.h"
 
 #include "ncompile/Dialect/QEC/QECDialect.h"
+#include "ncompile/Transforms/Passes.h"
 
 int main(int argc, char** argv) {
   mlir::registerAllPasses();
+  mlir::ncompile::registerNCompilePasses();
 
   mlir::DialectRegistry registry;
   mlir::registerAllDialects(registry);

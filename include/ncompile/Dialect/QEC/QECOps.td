@@ -43,7 +43,10 @@ def InitializeOp : QEC_Op<"initialize", [MemoryEffects<[MemWrite]>]> {
 
 def MeasurePauliOp : QEC_Op<"measure_pauli", [MemoryEffects<[MemWrite]>]> {
     let summary = "Measure a Pauli product over a set of qubits";
-    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata, Variadic<QEC_QubitType>:$qubits, QEC_PauliType:$pauli);
+    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata,
+                         Variadic<QEC_QubitType>:$qubits,
+                         QEC_PauliType:$pauli,
+                         OptionalAttr<I32Attr>:$time_slice);
     let results = (outs QEC_SyndromeType:$syndrome);
     let assemblyFormat = "`(` $qubits `)` `,` $pauli attr-dict `:` `(` type($qubits) `)` `,` type($pauli) `->` type($syndrome)";
     let hasVerifier = 1;
