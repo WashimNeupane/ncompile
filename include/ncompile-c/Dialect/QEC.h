@@ -38,26 +38,22 @@ MLIR_CAPI_EXPORTED bool ncompileMlirTypeIsAQECQubit(MlirType type);
 MLIR_CAPI_EXPORTED MlirType ncompileMlirQECQubitTypeGet(MlirContext ctx,
                                                         int64_t x, int64_t y);
 
-/**
- * @brief Returns true if the given type is a QEC Syndrome type.
- */
-MLIR_CAPI_EXPORTED bool ncompileMlirTypeIsAQECSyndrome(MlirType type);
+MLIR_CAPI_EXPORTED MlirType ncompileMlirQECQubitTypeGet(MlirContext ctx,
+                                                        int64_t x, int64_t y);
 
-/**
- * @brief Creates a QEC Syndrome type.
- */
+MLIR_CAPI_EXPORTED bool ncompileMlirTypeIsAQECSyndrome(MlirType type);
 MLIR_CAPI_EXPORTED MlirType ncompileMlirQECSyndromeTypeGet(MlirContext ctx);
 
-/**
- * @brief Returns true if the given type is a QEC Pauli type.
- */
 MLIR_CAPI_EXPORTED bool ncompileMlirTypeIsAQECPauli(MlirType type);
-
-/**
- * @brief Creates a QEC Pauli type from a string (e.g., "X", "Z", "I").
- */
 MLIR_CAPI_EXPORTED MlirType
 ncompileMlirQECPauliTypeGet(MlirContext ctx, MlirStringRef pauliString);
+
+MLIR_CAPI_EXPORTED bool ncompileMlirTypeIsAQECMZM(MlirType type);
+MLIR_CAPI_EXPORTED MlirType ncompileMlirQECMZMTypeGet(MlirContext ctx,
+                                                      int64_t x, int64_t y);
+
+MLIR_CAPI_EXPORTED bool ncompileMlirTypeIsAQECTetron(MlirType type);
+MLIR_CAPI_EXPORTED MlirType ncompileMlirQECTetronTypeGet(MlirContext ctx);
 
 #ifdef __cplusplus
 }

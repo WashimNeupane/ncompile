@@ -44,4 +44,20 @@ NB_MODULE(_ncompileDialectsQEC, m) {
             return ncompileMlirQECPauliTypeGet(ctx, msr);
           },
           nb::arg("pauli"), nb::arg("ctx"));
+
+  mlir::python::nanobind_adaptors::mlir_type_subclass(m, "MZM",
+                                                      ncompileMlirTypeIsAQECMZM)
+      .def_staticmethod(
+          "get",
+          [](MlirContext ctx, int64_t x, int64_t y) {
+            return ncompileMlirQECMZMTypeGet(ctx, x, y);
+          },
+          nb::arg("ctx"), nb::arg("x"), nb::arg("y"));
+
+  mlir::python::nanobind_adaptors::mlir_type_subclass(
+      m, "Tetron", ncompileMlirTypeIsAQECTetron)
+      .def_staticmethod(
+          "get",
+          [](MlirContext ctx) { return ncompileMlirQECTetronTypeGet(ctx); },
+          nb::arg("ctx"));
 }

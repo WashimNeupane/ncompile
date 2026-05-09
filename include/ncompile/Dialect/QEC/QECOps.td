@@ -42,7 +42,10 @@ def MZMInitOp : QEC_Op<"mzm_init", [MemoryEffects<[MemWrite]>]> {
 
 def MeasureParityOp : QEC_Op<"measure_parity", [MemoryEffects<[MemWrite]>]> {
     let summary = "Measure the joint parity of a set of MZMs";
-    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata, Variadic<QEC_MZMType>:$mzms);
+    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata,
+                         Variadic<QEC_MZMType>:$mzms,
+                         OptionalAttr<I32Attr>:$time_slice,
+                         OptionalAttr<ArrayAttr>:$braid_path);
     let results = (outs QEC_SyndromeType:$syndrome);
     let assemblyFormat = "$mzms attr-dict `:` functional-type($mzms, results)";
     let hasVerifier = 1;
