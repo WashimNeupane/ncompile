@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Neupane"
+  given-names: "Washim"
+title: "ncompile: Topological QEC Compiler"
+version: 0.1.0
+date-released: 2026-05-10
+url: "https://github.com/washim/ncompile"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Neupane"
+    given-names: "Washim"
+  title: "ncompile: An MLIR-based Compiler for Topological QEC"
+  year: 2026
+  journal: "Research in Progress"
