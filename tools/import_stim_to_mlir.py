@@ -1,95 +1,74 @@
-import stim
-import sys
+import stim, sys
 
-def import_stim(d, p_noise):
+def import_stim(d, p_noise=0.0):
+    """
+    Generate MLIR representing ONE round of syndrome extraction.
+    No noise, no detectors — just the check structure.
+    The translator will reconstruct the full circuit.
+    """
+    # Use rounds=1 to get clean single-round structure
     circuit = stim.Circuit.generated(
         "surface_code:rotated_memory_z",
         distance=d,
-        rounds=d,
-        after_clifford_depolarization=p_noise
-    )
+        rounds=1,
+        after_clifford_depolarization=0.0  # NO noise in MLIR
+    ).flattened()
 
     coords = circuit.get_final_qubit_coordinates()
 
-    print("module {")
+    # Identify ancillas: qubits that are reset-and-measured (MR)
+    ancilla_qubits = set()
+    for inst in circuit:
+        if inst.name == "MR":
+            for t in inst.targets_copy():
+                ancilla_qubits.add(t.value)
 
-    # Define MZMs for all qubits in the circuit
-    # Use a mapping to handle non-contiguous Stim qubit IDs
-    qubit_ids = sorted(coords.keys())
-    mzm_types = []
-    stim_to_mlir_id = {}
-
-    for i, q in enumerate(qubit_ids):
-        c = coords[q]
-        mzm_types.append(f"!qec.mzm<{int(c[0])}, {int(c[1])}>")
-        stim_to_mlir_id[q] = i
-
-    print(f"  %mzms:{len(qubit_ids)} = qec.mzm_init -> ({', '.join(mzm_types)})")
-
-    ancilla_targets = {}
-    measurement_to_syndrome = {}
-    measurement_idx = 0
-    p_str = f"{p_noise:.10f}"
-
-    for instruction in circuit:
-        if instruction.name == "CX":
-            targets = instruction.targets_copy()
+    # Build check structure: ancilla → list of data qubits it measures
+    ancilla_fanin = {q: [] for q in ancilla_qubits}
+    for inst in circuit:
+        if inst.name == "CX":
+            targets = inst.targets_copy()
             for i in range(0, len(targets), 2):
-                c = targets[i].value
-                t = targets[i+1].value
-                if t not in ancilla_targets: ancilla_targets[t] = []
-                ancilla_targets[t].append(c)
+                ctrl, tgt = targets[i].value, targets[i+1].value
+                if ctrl in ancilla_qubits:
+                    ancilla_fanin[ctrl].append(tgt)
+                elif tgt in ancilla_qubits:
+                    ancilla_fanin[tgt].append(ctrl)
 
-        elif instruction.name == "MR" or instruction.name == "M":
-            targets = instruction.targets_copy()
-            for t in targets:
-                q = t.value
-                if q in ancilla_targets and ancilla_targets[q]:
-                    data_qubits = ancilla_targets[q]
-                    args = ", ".join([f"%mzms#{stim_to_mlir_id[dq]}" for dq in data_qubits])
-                    m_coords = [coords[dq] for dq in data_qubits]
-                    types = ", ".join([f"!qec.mzm<{int(c[0])}, {int(c[1])}>" for c in m_coords])
+    # Collect data qubits only (not ancillas) for MZM representation
+    data_qubits = sorted(q for q in coords if q not in ancilla_qubits)
+    stim_to_mlir = {q: i for i, q in enumerate(data_qubits)}
+    mzm_types = [
+        f"!qec.mzm<{int(coords[q][0])}, {int(coords[q][1])}>"
+        for q in data_qubits
+    ]
 
-                    s_name = f"%s{measurement_idx}"
-                    print(f"  {s_name} = qec.measure_parity {args} {{noise = {p_str}}} : ({types}) -> !qec.syndrome")
-                    measurement_to_syndrome[measurement_idx] = s_name
-                    ancilla_targets[q] = []
-                else:
-                    # Data measurement
-                    mlir_id = stim_to_mlir_id[q]
-                    c = coords[q]
-                    print(f"  %m{measurement_idx} = qec.measure_parity %mzms#{mlir_id} {{noise = {p_str}}} : (!qec.mzm<{int(c[0])}, {int(c[1])}>) -> !qec.syndrome")
-                    measurement_to_syndrome[measurement_idx] = f"%m{measurement_idx}"
+    print("module {")
+    print(f"  %mzms:{len(data_qubits)} = qec.mzm_init -> ({', '.join(mzm_types)})")
 
-                measurement_idx += 1
-
-        elif instruction.name == "DETECTOR":
-            targets = instruction.targets_copy()
-            indices = []
-            for t in targets:
-                idx = measurement_idx + t.value
-                if idx in measurement_to_syndrome:
-                    indices.append(measurement_to_syndrome[idx])
-            if indices:
-                args = ", ".join(indices)
-                types = ", ".join(["!qec.syndrome"] * len(indices))
-                print(f"  qec.detector({args}) : ({types})")
-
-        elif instruction.name == "OBSERVABLE_INCLUDE":
-            targets = instruction.targets_copy()
-            indices = []
-            for t in targets:
-                idx = measurement_idx + t.value
-                if idx in measurement_to_syndrome:
-                    indices.append(measurement_to_syndrome[idx])
-            if indices:
-                args = ", ".join(indices)
-                types = ", ".join(["!qec.syndrome"] * len(indices))
-                print(f"  %log = qec.logical_observable({args}) : ({types}) -> !qec.syndrome")
+    check_idx = 0
+    # Emit one measure_parity per stabilizer check
+    for ancilla in sorted(ancilla_fanin.keys()):
+        dqs = ancilla_fanin[ancilla]
+        if not dqs:
+            continue
+        # Deduplicate preserving order
+        seen = []
+        for dq in dqs:
+            if dq not in seen and dq in stim_to_mlir:
+                seen.append(dq)
+        if not seen:
+            continue
+        args  = ", ".join(f"%mzms#{stim_to_mlir[dq]}" for dq in seen)
+        types = ", ".join(
+            f"!qec.mzm<{int(coords[dq][0])}, {int(coords[dq][1])}>"
+            for dq in seen
+        )
+        print(f"  %c{check_idx} = qec.measure_parity {args} : ({types}) -> !qec.syndrome")
+        check_idx += 1
 
     print("}")
 
 if __name__ == "__main__":
     d = int(sys.argv[1]) if len(sys.argv) > 1 else 3
-    p = float(sys.argv[2]) if len(sys.argv) > 2 else 0.001
-    import_stim(d, p)
+    import_stim(d)
