@@ -75,7 +75,10 @@ python3 tools/run_simulations.py
 | d=5 | 14 | 10 | 1.4x |
 
 ### Threshold Sweep Results
-![Surface Threshold Sweep](docs/images/surface_threshold_final.png)
+![Surface Threshold Sweep](benchmarks/surface_threshold_final.png)
+
+### Compiler Scaling Performance
+![Scaling Plot](benchmarks/scaling_plot.png)
 
 ## Development Roadmap
 

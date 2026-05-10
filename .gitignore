@@ -36,7 +36,6 @@ venv/
 
 # Generated Documentation
 docs/
-!docs/images/
 research_artifacts/
 mcp.json
 TASKS.md
