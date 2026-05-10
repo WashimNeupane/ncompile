@@ -82,6 +82,8 @@ def QEC_TetronType : QEC_Type<"Tetron", "tetron"> {
     let summary = "A logical qubit unit composed of 4 MZMs";
 }
 
+def QEC_AnyResourceType : AnyTypeOf<[QEC_QubitType, QEC_MZMType]>;
+
 //===----------------------------------------------------------------------===//
 // QEC Op definition.
 //===----------------------------------------------------------------------===//

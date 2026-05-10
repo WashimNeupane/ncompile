@@ -92,27 +92,33 @@ def LogicalObservableOp : QEC_Op<"logical_observable", [MemoryEffects<[MemWrite]
 
 def CXOp : QEC_Op<"cx", [MemoryEffects<[MemWrite]>]> {
     let summary = "Controlled-X (CNOT) gate";
-    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata, QEC_QubitType:$control, QEC_QubitType:$target);
+    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata, QEC_AnyResourceType:$control, QEC_AnyResourceType:$target);
     let assemblyFormat = "$control `,` $target attr-dict `:` type($control) `,` type($target)";
     let hasVerifier = 1;
 }
 
 def ResetOp : QEC_Op<"reset", [MemoryEffects<[MemWrite]>]> {
     let summary = "Reset qubit to |0>";
-    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata, QEC_QubitType:$qubit);
+    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata, QEC_AnyResourceType:$qubit);
     let assemblyFormat = "$qubit attr-dict `:` type($qubit)";
 }
 
 def MeasureOp : QEC_Op<"measure", [MemoryEffects<[MemWrite]>]> {
     let summary = "Measure qubit in Z basis";
-    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata, QEC_QubitType:$qubit);
+    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata, QEC_AnyResourceType:$qubit);
     let results = (outs QEC_SyndromeType:$syndrome);
     let assemblyFormat = "$qubit attr-dict `:` type($qubit) `->` type($syndrome)";
 }
 
+def HOp : QEC_Op<"h", [MemoryEffects<[MemWrite]>]> {
+    let summary = "Hadamard gate";
+    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata, QEC_AnyResourceType:$qubit);
+    let assemblyFormat = "$qubit attr-dict `:` type($qubit)";
+}
+
 def IdleOp : QEC_Op<"idle", [MemoryEffects<[MemWrite]>]> {
     let summary = "Idle (explicit no-op)";
-    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata, QEC_QubitType:$qubit);
+    let arguments = (ins OptionalAttr<DictionaryAttr>:$metadata, QEC_AnyResourceType:$qubit);
     let assemblyFormat = "$qubit attr-dict `:` type($qubit)";
 }
 
